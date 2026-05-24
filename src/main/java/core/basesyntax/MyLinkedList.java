@@ -14,6 +14,7 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
             first = newNode;
         } else {
             last.next = newNode;
+            newNode.previous = last; // ← БАГ 1: встановлюємо зворотній зв'язок
         }
         last = newNode;
         size++;
@@ -27,13 +28,12 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
         }
         Node<T> current = findNode(index);
         Node<T> newNode = new Node<>(current.previous, value, current);
-
         if (current.previous == null) {
             first = newNode;
         } else {
             current.previous.next = newNode;
         }
-        current.previous = newNode;
+        current.previous = newNode; // ← БАГ 2: встановлюємо зворотній зв'язок при index=0
         size++;
     }
 
@@ -59,16 +59,15 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
 
     @Override
     public T remove(int index) {
-        Node<T> removedNode = unlink(findNode(index));
-        return removedNode.value;
+        return unlink(findNode(index)).value;
     }
 
     @Override
     public boolean remove(T object) {
         Node<T> current = first;
-        for (int i = 0; i < size; i++) {
+        while (current != null) { // ← БАГ 3: while замість for, бо після unlink size зменшується
             if (current.value == object
-                    || current.value != null && current.value.equals(object)) {
+                    || (current.value != null && current.value.equals(object))) { // ← БАГ 4: дужки для правильного пріоритету операторів
                 unlink(current);
                 return true;
             }
@@ -91,7 +90,7 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
         if (index >= size || index < 0) {
             throw new IndexOutOfBoundsException("Index out of bounds: " + index);
         }
-        if (size / 2 > index) {
+        if (index < size / 2) {
             Node<T> element = first;
             for (int i = 0; i < index; i++) {
                 element = element.next;
@@ -115,7 +114,6 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
         } else {
             node.previous.next = node.next;
         }
-
         if (node.next == null) {
             last = node.previous;
         } else {
