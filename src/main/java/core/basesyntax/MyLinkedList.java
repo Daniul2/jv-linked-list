@@ -14,7 +14,7 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
             first = newNode;
         } else {
             last.next = newNode;
-            newNode.previous = last; // ← БАГ 1: встановлюємо зворотній зв'язок
+            newNode.previous = last;
         }
         last = newNode;
         size++;
@@ -33,7 +33,7 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
         } else {
             current.previous.next = newNode;
         }
-        current.previous = newNode; // ← БАГ 2: встановлюємо зворотній зв'язок при index=0
+        current.previous = newNode;
         size++;
     }
 
@@ -65,9 +65,9 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
     @Override
     public boolean remove(T object) {
         Node<T> current = first;
-        while (current != null) { // ← БАГ 3: while замість for, бо після unlink size зменшується
+        while (current != null) {
             if (current.value == object
-                    || (current.value != null && current.value.equals(object))) { // ← БАГ 4: дужки для правильного пріоритету операторів
+                    || (current.value != null && current.value.equals(object))) {
                 unlink(current);
                 return true;
             }
